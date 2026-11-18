@@ -1,42 +1,20 @@
 [
   {
-    "repo": "uwplasma/DRBX",
-    "number": 132,
-    "head": "369f30a87b7c1284daa5610d9501625a4c413efd",
-    "rank": 1,
-    "action": "Review",
-    "decision": "Merge the property tests first.",
-    "before": "Eight multigrid checks were outside test discovery. The coverage job had no floor.",
-    "after": "The PR restores those checks. Measured coverage rose from 58% to 59% on its base and the combined test time fell from 18m 20s to 17m 02s.",
-    "evidence_url": "https://github.com/uwplasma/DRBX/pull/132"
-  },
-  {
-    "repo": "uwplasma/DRBX",
-    "number": 131,
-    "head": "48e5beb894107e37e1b02951e7c947974641a4da",
-    "rank": 2,
-    "action": "Review",
-    "decision": "Take the cleanup after #132 and recheck test discovery.",
-    "before": "Six test files contained helpers and legacy tests that never ran.",
-    "after": "The PR removes 1,109 lines. On the tested base, pytest collected the same 982 tests.",
-    "evidence_url": "https://github.com/uwplasma/DRBX/pull/131"
-  },
-  {
     "repo": "uwplasma/ESSOS",
-    "number": 182,
-    "head": "e71584c500db7759e42e45b6b3a961cd67ff1325",
-    "rank": 3,
+    "number": 224,
+    "rank": 1,
+    "head": "2671276ebce4bccc1f4c791676f486490f5b434b",
     "action": "Review",
-    "decision": "Approve the surface-flux correction.",
-    "before": "The quadrature could close an open half-period arc and report a spurious flux.",
-    "after": "Full-torus integration uses analytic tangents. The PR reports 28 passing tests, including an analytic coil comparison and shape derivatives.",
-    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/182"
+    "decision": "Merge the adaptive angular-error correction.",
+    "before": "Equivalent initial angles separated by 10,000 turns produced a 0.0077 invariant error at relative tolerance 1e-7.",
+    "after": "With a fixed angular error scale the regression and all 127 reported dynamics tests pass.",
+    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/224"
   },
   {
     "repo": "uwplasma/ESSOS",
     "number": 183,
     "head": "b877cb2f44b008950b5d4715144ab57ddbf34ff2",
-    "rank": 4,
+    "rank": 2,
     "action": "Review",
     "decision": "Approve the weighted-loss fix.",
     "before": "Scaling a loss could lose its inputs. A first call under JIT could cache an invalid tracer.",
@@ -47,12 +25,23 @@
     "repo": "uwplasma/ESSOS",
     "number": 185,
     "head": "c10d392c5fe575d9c74a2dd533d20b839fe015a0",
-    "rank": 5,
+    "rank": 3,
     "action": "Review",
     "decision": "Approve fixed and unbounded optimizer bounds.",
     "before": "Infinite or fixed bounds could break the inner optimization.",
     "after": "The PR reports 28 passing tests, including seven new bound cases.",
     "evidence_url": "https://github.com/uwplasma/ESSOS/pull/185"
+  },
+  {
+    "repo": "uwplasma/ESSOS",
+    "number": 249,
+    "rank": 4,
+    "head": "d10311802e5b7d4c9772485d861ebee77de6d1cc",
+    "action": "Hold",
+    "decision": "Separate boundary losses from numerical failures before merging.",
+    "before": "The QA test counted no losses even though 43 of 100 alphas hit the boundary.",
+    "after": "The PR reports 43% loss, but also classifies non-finite states and non-wall stops as losses.",
+    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/249"
   },
   {
     "repo": "uwplasma/ESSOS",
@@ -68,12 +57,12 @@
   {
     "repo": "uwplasma/GKX",
     "number": 501,
-    "head": "86849337b0350e55c746e00983798cb48904ef81",
+    "head": "f8acb4cbe68432f0241892158c7e9db28375959e",
     "rank": 7,
-    "action": "Hold",
-    "decision": "Hold collision batching until elapsed time survives chunk boundaries.",
-    "before": "In a reproduced three-step case the elapsed time was 0.21.",
-    "after": "This head applied 0.03. Two short chunks could skip the collision. Restrict batching to aligned fixed steps or carry elapsed time across chunks.",
+    "action": "Review",
+    "decision": "Check the fixed-step guard on the collision feature branch.",
+    "before": "The original adaptive shortcut applied only 0.03 collision-time units across steps totaling 0.21.",
+    "after": "The revised head restricts batching to aligned fixed-step scans. All 20 focused tests passed locally.",
     "evidence_url": "https://github.com/uwplasma/GKX/pull/501"
   },
   {
@@ -123,10 +112,10 @@
   {
     "repo": "uwplasma/FAX",
     "number": 66,
-    "head": "95567b477f077d39861b92f9d50aa805be602163",
+    "head": "db09606889c4ba377c614d7500cda8c3c4c7b874",
     "rank": 12,
     "action": "Review",
-    "decision": "Promote the compile change to review.",
+    "decision": "Review the six-mode assembly change after the ready-for-review checks finish.",
     "before": "On base 0cea7e77, six CTOK modes took 14.02 s first call and 0.861 s warm on the M4.",
     "after": "The rebased PR took 7.29 s first call and 0.226 s warm with matching frequencies. Both revisions ran under shared load.",
     "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#fax"
