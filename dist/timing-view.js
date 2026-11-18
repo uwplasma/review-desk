@@ -43,6 +43,23 @@ async function load() {
       [key.replace('uwplasma/',''), s.jobs, duration(s.wait[0]), duration(s.wait[1]), duration(s.runtime[0]), s.minutes.toLocaleString(), s.cancelled_minutes.toLocaleString()])
     table(title, [first,'Jobs','Median pre-start','p95 pre-start','Median runtime','Runner-min','Cancelled min'], rows)
   }
+  const pools = Object.entries(h.pools).filter(([, stats]) => stats.wait[1] != null)
+  if (pools.length) {
+    tables.append(element('h2', 'Time before jobs start'))
+    const maximum = Math.max(1, ...pools.map(([, stats]) => stats.wait[1]))
+    for (const [pool, stats] of pools) {
+      const row = element('div'); row.className = 'wait-row'
+      const track = element('div'); track.className = 'wait-track'
+      track.setAttribute('aria-hidden', 'true')
+      const span = element('div'); span.className = 'wait-range'
+      span.style.width = (100 * stats.wait[1] / maximum) + '%'
+      const median = element('i')
+      median.style.left = (100 * stats.wait[0] / maximum) + '%'
+      track.append(span, median)
+      row.append(element('strong', pool), track, element('span', 'Median ' + duration(stats.wait[0]) + ' · p95 ' + duration(stats.wait[1])))
+      tables.append(row)
+    }
+  }
   summarize('Runner pools','Pool', h.pools)
   summarize('Repositories','Repository', h.repos)
   const rows = snapshot.repositories.filter(repo => repo.name.startsWith('uwplasma/')).map(repo => {
