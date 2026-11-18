@@ -1,75 +1,43 @@
 [
   {
     "repo": "uwplasma/ESSOS",
-    "number": 224,
-    "rank": 1,
-    "head": "2671276ebce4bccc1f4c791676f486490f5b434b",
-    "action": "Review",
-    "decision": "Merge the adaptive angular-error correction.",
-    "before": "Equivalent initial angles separated by 10,000 turns produced a 0.0077 invariant error at relative tolerance 1e-7.",
-    "after": "With a fixed angular error scale the regression and all 127 reported dynamics tests pass.",
-    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/224"
-  },
-  {
-    "repo": "uwplasma/ESSOS",
-    "number": 183,
-    "head": "b877cb2f44b008950b5d4715144ab57ddbf34ff2",
-    "rank": 2,
-    "action": "Review",
-    "decision": "Approve the weighted-loss fix.",
-    "before": "Scaling a loss could lose its inputs. A first call under JIT could cache an invalid tracer.",
-    "after": "Both failures have regression tests. The PR reports seven passes and one previously expected failure.",
-    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/183"
-  },
-  {
-    "repo": "uwplasma/ESSOS",
-    "number": 185,
-    "head": "c10d392c5fe575d9c74a2dd533d20b839fe015a0",
-    "rank": 3,
-    "action": "Review",
-    "decision": "Approve fixed and unbounded optimizer bounds.",
-    "before": "Infinite or fixed bounds could break the inner optimization.",
-    "after": "The PR reports 28 passing tests, including seven new bound cases.",
-    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/185"
-  },
-  {
-    "repo": "uwplasma/ESSOS",
-    "number": 249,
-    "rank": 4,
-    "head": "d10311802e5b7d4c9772485d861ebee77de6d1cc",
-    "action": "Hold",
-    "decision": "Separate boundary losses from numerical failures before merging.",
-    "before": "The QA test counted no losses even though 43 of 100 alphas hit the boundary.",
-    "after": "The PR reports 43% loss, but also classifies non-finite states and non-wall stops as losses.",
-    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/249"
-  },
-  {
-    "repo": "uwplasma/ESSOS",
     "number": 230,
     "head": "2ca01d0ba21afb0fd58d24f4544279d977251595",
-    "rank": 6,
+    "rank": 1,
     "action": "Review",
-    "decision": "Review compile reuse after the correctness changes.",
+    "decision": "Merge the repeat-trace cache change.",
     "before": "A repeated VMEC trace compiled three times. Median steady time was 8.4 s.",
     "after": "Recompiles fell to zero and steady time was 8.3 s. The first trace rose from about 13 s to about 20 s.",
-    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/230"
+    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/230",
+    "validation": "34 focused tests passed on a local merge with main 34319bb3, including the angular-origin and compile-reuse regressions."
   },
   {
-    "repo": "uwplasma/GKX",
-    "number": 501,
-    "head": "f8acb4cbe68432f0241892158c7e9db28375959e",
-    "rank": 7,
+    "repo": "uwplasma/DKX",
+    "number": 471,
+    "rank": 2,
+    "head": "9321fcbac8e7fabe77e1ba5ed0cb69a29bbeb214",
     "action": "Review",
-    "decision": "Check the fixed-step guard on the collision feature branch.",
-    "before": "The original adaptive shortcut applied only 0.03 collision-time units across steps totaling 0.21.",
-    "after": "The revised head restricts batching to aligned fixed-step scans. All 20 focused tests passed locally.",
-    "evidence_url": "https://github.com/uwplasma/GKX/pull/501"
+    "decision": "Review convergence on a real profile or scan.",
+    "before": "Three solve paths could reject a solution whose residual was already at rounding precision.",
+    "after": "The paths now share a backward-error floor. A regression accepts a 1e-15 residual and rejects 1e-3.",
+    "evidence_url": "https://github.com/uwplasma/DKX/pull/471"
+  },
+  {
+    "repo": "uwplasma/SOLVAX",
+    "number": 207,
+    "head": "0a6dc5f6fc9d5ef8c6ef0367159615d083e528ae",
+    "rank": 3,
+    "action": "Review",
+    "decision": "Review the block-factor change for adjoint solves.",
+    "before": "On baseline 6cdc9f40, the 16-right-hand-side gradient took 0.131–0.159 s warm on the M4.",
+    "after": "The PR took 0.0415–0.0439 s. A centered derivative check agreed within 1.3 × 10⁻¹⁰ relative.",
+    "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#solvax"
   },
   {
     "repo": "uwplasma/SPECTRAX",
     "number": 95,
     "head": "cb621f0dfe76e6ebcbb96e55c556b4a397d3d63b",
-    "rank": 8,
+    "rank": 4,
     "action": "Hold",
     "decision": "Request per-species normalization and a Gauss-law test.",
     "before": "The default initial state ignored the requested thermal scales.",
@@ -97,17 +65,6 @@
     "before": "The benchmark rebuilt the preconditioner 30 times per free-boundary run.",
     "after": "Three builds reached the same final objective. The reported median warm wall time fell from 327.7 to 311.8 seconds.",
     "evidence_url": "https://github.com/uwplasma/vmex/pull/816"
-  },
-  {
-    "repo": "uwplasma/SOLVAX",
-    "number": 207,
-    "head": "0a6dc5f6fc9d5ef8c6ef0367159615d083e528ae",
-    "rank": 11,
-    "action": "Review",
-    "decision": "Review the block-factor change for adjoint solves.",
-    "before": "On baseline 6cdc9f40, the 16-right-hand-side gradient took 0.131–0.159 s warm on the M4.",
-    "after": "The PR took 0.0415–0.0439 s. A centered derivative check agreed within 1.3 × 10⁻¹⁰ relative.",
-    "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#solvax"
   },
   {
     "repo": "uwplasma/FAX",
