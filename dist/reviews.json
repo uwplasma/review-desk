@@ -112,12 +112,12 @@
   {
     "repo": "uwplasma/FAX",
     "number": 66,
-    "head": "1d94046ae7e73210a231cd1fdd3eca10ccffee51",
+    "head": "95567b477f077d39861b92f9d50aa805be602163",
     "rank": 12,
     "action": "Review",
     "decision": "Promote the compile change to review.",
-    "before": "The CTOK case took 7.00 s cold and 0.226 s warm on the M4.",
-    "after": "The same case took 2.69 s cold and 0.068 s warm. The mode frequencies matched.",
+    "before": "On current main, six CTOK modes took 14.02 s first call and 0.861 s warm on the M4.",
+    "after": "The rebased PR took 7.29 s first call and 0.226 s warm with matching frequencies. Both revisions ran under shared load.",
     "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#fax"
   },
   {

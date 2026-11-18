@@ -334,7 +334,7 @@ function renderRows() {
     const text = [row.key, row.pr.title, row.pr.author, row.pr.head_branch, row.pr.base_branch,
       ...(row.pr.reviews || []).map(review => review.login), ...(row.pr.requested || []).map(person => person.login),
       row.decision[1], row.decision[2], row.pr.number].join(" ").toLowerCase();
-    return words.every(word => text.includes(word));
+    return words.every(word => /^#\d+$/.test(word) ? word === "#" + row.pr.number : text.includes(word.replace(/^@/, "")));
   });
   const shown = rows.slice(0, state.limit);
   $("#counts").textContent = shown.length < rows.length
