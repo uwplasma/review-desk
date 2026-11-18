@@ -346,6 +346,7 @@ function renderRows() {
 
 function timing(repo, run, job) {
   const parts = [];
+  if (activeStates.has(run.status) && ["CPU", "GPU"].includes(job.device)) parts.push(job.device);
   if (job.backend) parts.push(job.backend);
   const pending = activeStates.has(job.status) && !job.started_at;
   const origin = job.created_at || run.created_at;
@@ -444,7 +445,7 @@ function renderMethod() {
       + limits.completed_run_details_per_repo + " completed runs per repository, with up to "
       + limits.jobs_per_run + " jobs per run.",
     "GitHub job creation timestamps support job-level wait. Run-to-job start also includes dependency and workflow work. "
-      + "Runner types are inferred from public labels. Organization-wide capacity and physical host counts are outside this data.",
+      + "CPU and GPU denote explicit public job labels. Organization-wide capacity and physical host counts are outside this data.",
   ];
   if (errors.length) paragraphs.push("Request errors · " + errors.join(", ") + ".");
   if (info.job_budget_skipped) paragraphs.push(info.job_budget_skipped + " run samples exceeded the job-detail request budget.");

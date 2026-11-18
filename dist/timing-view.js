@@ -1,6 +1,26 @@
 const feedURL = 'https://raw.githubusercontent.com/uwplasma/review-desk/data/data.json'
 const tables = document.querySelector('#tables')
 const dateNode = document.querySelector('#date')
+const branchNotes = {
+  'uwplasma/GKX': {
+    sha: '5782b8c3f18e60bb94bcb2f0770a0905d2a2d3a5',
+    summary: 'Hosted wide-coverage shard 7 exceeded 30 minutes on both attempts. The self-hosted shard 2 received a shutdown signal.',
+    action: 'Validate #504 with a trusted wide-coverage run and investigate shard 2 runner stability separately.',
+    links: [
+      ['Failed run', 'https://github.com/uwplasma/GKX/actions/runs/44131675843'],
+      ['Budget fix #504', 'https://github.com/uwplasma/GKX/pull/504'],
+    ],
+  },
+  'uwplasma/MHX': {
+    sha: 'bd6b015ce0a9b51bea3fa2d9fe6ee744be98e54a',
+    summary: 'Three tests failed on the same self-hosted Mac. A CLI assertion broke on wrapped output, and two tearing validation assertions also failed.',
+    action: 'Run #18’s named tearing diagnostics on the original Mac and a second host with matching dependencies.',
+    links: [
+      ['Failed job', 'https://github.com/uwplasma/MHX/actions/runs/43327149458/job/131562383712'],
+      ['Fixture fix and diagnostics #18', 'https://github.com/uwplasma/MHX/pull/18'],
+    ],
+  },
+}
 function element(tag, text) {
   const node = document.createElement(tag)
   if (text !== undefined) node.textContent = text
@@ -28,6 +48,26 @@ function source(record) {
   if (!record.url.startsWith('https://github.com/')) return label
   const link = element('a', label); link.href = record.url
   return link
+}
+function branchDiagnoses(repositories) {
+  const section = element('div')
+  section.className = 'branch-notes'
+  for (const repo of repositories) {
+    const note = branchNotes[repo.name]
+    if (!note || repo.tip?.sha !== note.sha || !['FAILURE', 'ERROR'].includes(repo.tip.checks)) continue
+    const card = element('article')
+    card.append(element('h3', repo.name.split('/')[1] + ' · ' + note.sha.slice(0, 8)),
+      element('p', note.summary), element('p', note.action))
+    const links = element('p'); links.className = 'branch-note-links'
+    for (const [label, url] of note.links) {
+      const anchor = element('a', label)
+      anchor.href = url
+      links.append(anchor)
+    }
+    card.append(links)
+    section.append(card)
+  }
+  if (section.children.length) tables.append(section)
 }
 async function load() {
   const urls = location.hostname === 'uwplasma.github.io' ? [feedURL + '?t=' + Math.floor(Date.now()/300000), './data.json'] : ['./data.json']
@@ -72,6 +112,7 @@ async function load() {
   })
   table('Current default branches', ['Repository','Branch','Commit','GitHub checks','Open PRs'], rows)
   tables.lastElementChild.previousElementSibling.id = 'branches'
+  branchDiagnoses(snapshot.repositories)
   table('Longest pre-start intervals',['Job','Pool','Pre-start','Runtime'], h.longest.map(j=>[source(j),j.pool,duration(j.wait),duration(j.runtime)]))
 }
 load()

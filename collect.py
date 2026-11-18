@@ -24,6 +24,8 @@ ACTIVE = {"queued", "in_progress", "waiting", "pending", "requested"}
 REQUESTS = Counter()
 REQUEST_LOCK = Lock()
 JOB_BUDGET = 14
+CPU_LABELS = {"cpu", "cpu-only", "uwplasma-cpu"}
+GPU_LABELS = {"gpu", "gpu-only", "cuda", "rocm", "uwplasma-gpu"}
 CHECKS = """statusCheckRollup { state contexts(first: 32) { pageInfo { hasNextPage } nodes {
   ... on CheckRun { name status conclusion detailsUrl startedAt completedAt }
   ... on StatusContext { context state targetUrl }
@@ -203,13 +205,16 @@ def run_data(run):
 
 def job_data(job):
     status = job.get("status")
-    labels = job.get("labels") or []
+    labels = {label.casefold() for label in (job.get("labels") or []) if isinstance(label, str)}
+    cpu = bool(labels & CPU_LABELS)
+    gpu = bool(labels & GPU_LABELS)
+    device = ("GPU" if gpu else "CPU") if cpu != gpu else None
     self_hosted = "self-hosted" in labels
     hosted = any(re.match(r"^(ubuntu|macos|windows)-(latest|[0-9.]+(?:-arm|-intel)?)$", label)
                  for label in labels)
     backend = "Self-hosted" if self_hosted else "Standard hosted" if hosted else None
     return {"name": cleaned(job.get("name"), 150), "url": safe_link(job.get("html_url")),
-            "backend": backend, "status": status, "conclusion": job.get("conclusion"),
+            "backend": backend, "device": device, "status": status, "conclusion": job.get("conclusion"),
             "created_at": job.get("created_at"),
             "started_at": job.get("started_at") if status != "queued" else None,
             "completed_at": job.get("completed_at")}
