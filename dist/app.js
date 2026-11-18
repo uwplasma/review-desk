@@ -20,6 +20,7 @@ const initialFilters = new URLSearchParams(location.search);
 const state = {
   data: null,
   notes: [],
+  notesVersion: "",
   all: [],
   filter: tabs.some(([value]) => value === initialFilters.get("triage")) ? initialFilters.get("triage") : "focus",
   limit: PAGE_SIZE,
@@ -487,6 +488,8 @@ async function refresh() {
   state.lastFetch = Date.now();
   $("#reload").disabled = true;
   try {
+    const interval = Math.floor(Date.now() / INTERVAL);
+    const notesRequest = fetchJson("./reviews.json?t=" + interval).catch(() => null);
     let data;
     let fallback = false;
     try {
@@ -497,7 +500,13 @@ async function refresh() {
       fallback = true;
     }
     if (!fallback && LIVE) state.hasLive = true;
-    if (!state.data || state.data.captured_at !== data.captured_at) {
+    const notes = await notesRequest;
+    const version = Array.isArray(notes) ? JSON.stringify(notes) : state.notesVersion;
+    if (!state.data || state.data.captured_at !== data.captured_at || version !== state.notesVersion) {
+      if (Array.isArray(notes)) {
+        state.notes = notes;
+        state.notesVersion = version;
+      }
       state.data = data;
       state.all = consolidate(data, state.notes);
       renderRepositoryPicker();
@@ -555,7 +564,5 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden && Date.now() - state.lastFetch >= INTERVAL) refresh();
 });
 renderTabs();
-fetchJson("./reviews.json").then(notes => {
-  if (Array.isArray(notes)) state.notes = notes;
-}).catch(() => {}).finally(refresh);
+refresh();
 schedule();

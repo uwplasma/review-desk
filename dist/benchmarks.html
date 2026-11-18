@@ -75,7 +75,7 @@
 <section id="dkx" class="comparison">
 <h3>DKX</h3>
 <div><strong>HSX Fokker–Planck</strong>
-<p>Reduced case on M4, 30.55 s first → 5.53 s warm. The full case exhausted GPU memory with 12.2 GiB sampled process use.</p>
+<p>Reduced case on M4, 30.55 s first → 5.53 s warm. On the shared A4000, the reduced case reached a 1.86 × 10⁻⁹ residual in 22 iterations. The full case exhausted GPU memory with 12.2 GiB sampled process use.</p>
 </div>
 </section>
 <section id="essos" class="comparison">
@@ -112,18 +112,19 @@
 <h3>JAX-in-Cell</h3>
 <div><strong>45,000 particles, 200 steps</strong>
 <p>CPU parent → #86, 9.36 → 4.30 s warm. Four seeds kept the Gauss residual below 8 × 10⁻¹⁵.</p>
+<p>On a separate 262,144-particle two-stream test, GPU parent → #80 took 2.069 → 0.778 s warm on a shared A4000. Peak device allocation rose from 166 to 190 MiB. Electric-field histories agreed within 6 × 10⁻¹³ relative.</p>
 </div>
 </section>
 <section id="mhx" class="comparison">
 <h3>MHX</h3>
 <div><strong>128² Orszag–Tang, 400 steps</strong>
-<p>M4 main → #16, 1.706 → 1.183 s warm. All six physics checks passed.</p>
+<p>M4 main → #16, 1.706 → 1.183 s warm. All six physics checks passed on CPU and on a shared A4000.</p>
 </div>
 </section>
 <section id="spectrax" class="comparison">
 <h3>SPECTRAX</h3>
 <div><strong>Two-species Orszag–Tang, 40 steps</strong>
-<p>19.13 s first → 13.25 s warm on M4. Maximum normalized energy drift was 2.3 × 10⁻¹⁶.</p>
+<p>19.13 s first → 13.25 s warm on M4. Maximum normalized energy drift was 2.3 × 10⁻¹⁶. A shared A4000 finished in 18.04 s first call and 7.50 s warm, with matching final energy.</p>
 </div>
 </section>
 <section id="solvax" class="comparison">

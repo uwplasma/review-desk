@@ -174,5 +174,16 @@
     "before": "The 128² Orszag–Tang case took 1.706 s warm for 400 steps on the M4.",
     "after": "The same 400 steps took 1.183 s. The physics checks passed.",
     "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#mhx"
+  },
+  {
+    "repo": "uwplasma/JAX-in-Cell",
+    "number": 80,
+    "head": "3f2fe7d73ce9a52f1ddca90dbe1cba6e7d4ff30b",
+    "rank": 17,
+    "action": "Review",
+    "decision": "Review the GPU scatter change against its feature-branch parent.",
+    "before": "On a shared A4000 the 262,144-particle trajectory took 2.069 s warm. Peak device allocation was 166 MiB.",
+    "after": "The same trajectory took 0.778 s warm with electric-field histories matching within 6 × 10⁻¹³ relative. Peak allocation grew to 190 MiB.",
+    "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#jax-in-cell"
   }
 ]
