@@ -25,6 +25,7 @@
 <h2>Fast particles</h2>
 <div>
 <p>For 64 matched QA alpha launches over 1 ms, ESSOS, FIRM3D and SIMPLE lost 7, 7 and 6 particles. In ARIES-CS they lost 9, 11 and 12. ESSOS agreed on the fate of 60 of 64 launches with FIRM3D and 55 with SIMPLE. Repeat the individual disagreements at a finer timestep before changing defaults.</p>
+<p>In a separate full-K QA test, native FIRM3D on CPU and CATAPULT on CUDA agreed on all 64 fates, with five losses each. The largest paired loss-time difference was 0.125 μs. Tracing took 90.51 s on one CPU thread and 9.89 s on a shared A4000, excluding field preparation.</p>
 <p class="sources"><a href="https://github.com/uwplasma/ESSOS/tree/b1d4c65d/examples/cross_code_benchmark">ESSOS benchmark</a><a href="https://arxiv.org/abs/1903.06885">SIMPLE</a><a href="https://arxiv.org/abs/2605.16734">FIRM3D</a><a href="https://arxiv.org/abs/2604.07617">CATAPULT GPU study</a><a href="https://github.com/PrincetonUniversity/STELLOPT">STELLOPT / BEAMS3D</a></p>
 </div>
 </section>
@@ -38,7 +39,7 @@
 <section class="comparison">
 <h2>Gyrokinetic turbulence</h2>
 <div>
-<p>The archived GKX four-code fixture reports Cyclone heat flux of 6.91 ± 0.19 for GKX and 6.64 ± 0.26 for GX. GS2 and stella have shorter averaging windows. The faster stellarator QA grid shifted flux by 12% against the finer velocity-space reference, so it cannot establish a five-percent result.</p>
+<p>On the new QA run, 128 attempts took 31 s without concurrent GPU work and about 100 s during the busiest interval. The archived four-code fixture reports Cyclone heat flux of 6.91 ± 0.19 for GKX and 6.64 ± 0.26 for GX. GS2 and stella have shorter averaging windows. The faster stellarator QA grid shifted flux by 12% against the finer velocity-space reference, so it cannot establish a five-percent result.</p>
 <p class="sources"><a href="https://github.com/uwplasma/GKX/blob/5782b8c3/docs/figures/four_code_comparison.json">GKX, GX, GS2 and stella fixture</a><a href="https://arxiv.org/abs/2209.06731">GX paper</a><a href="https://github.com/uwplasma/GKX/pull/503">QA resolution study</a></p>
 </div>
 </section>
@@ -93,7 +94,7 @@
 <section id="gkx" class="comparison">
 <h3>GKX</h3>
 <div><strong>QA, 96 × 96 × 48, 6 × 12 moments</strong>
-<p>First 128 attempts took 85.4 s including compilation. Subsequent uncontended chunks took about 31.2 s on A4000.</p>
+<p>The full nonlinear run reached its heat-flux stopping criterion at t = 490.06 in 44 min 40 s on a shared A4000. Heat flux was 5.337 ± 0.144 (one batch standard error, 2.69%). This measures sampling uncertainty. Grid convergence and the ten-minute CPU target remain open.</p>
 </div>
 </section>
 <section id="drbx" class="comparison">
