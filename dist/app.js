@@ -38,7 +38,7 @@ function node(tag, className, content) {
 function link(url, label) {
   try {
     const parsed = new URL(url);
-    if (parsed.protocol === "https:" && ["github.com", "app.codecov.io"].includes(parsed.hostname)) {
+    if (parsed.protocol === "https:" && ["github.com", "app.codecov.io", "uwplasma.github.io"].includes(parsed.hostname)) {
       const a = node("a", "", label);
       a.href = parsed.href;
       return a;
