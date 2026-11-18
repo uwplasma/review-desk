@@ -16,11 +16,12 @@ const tabs = [
   ["draft", "Drafts"],
   ["all", "All open"],
 ];
+const initialFilters = new URLSearchParams(location.search);
 const state = {
   data: null,
   notes: [],
   all: [],
-  filter: "focus",
+  filter: tabs.some(([value]) => value === initialFilters.get("triage")) ? initialFilters.get("triage") : "focus",
   limit: PAGE_SIZE,
   expanded: new Set(),
   lastFetch: 0,
@@ -166,6 +167,15 @@ function setMetrics() {
     return card;
   }));
 }
+function saveFilters() {
+  const url = new URL(location.href);
+  const values = {repo: $("#repository").value, q: $("#query").value, triage: state.filter === "focus" ? "" : state.filter};
+  for (const [key, value] of Object.entries(values)) {
+    if (value) url.searchParams.set(key, value);
+    else url.searchParams.delete(key);
+  }
+  if (url.href !== location.href) history.replaceState(null, "", url);
+}
 function renderTabs() {
   $("#tabs").replaceChildren(...tabs.map(([key, label]) => {
     const button = node("button", "", label);
@@ -173,6 +183,7 @@ function renderTabs() {
     button.setAttribute("aria-pressed", String(state.filter === key));
     button.addEventListener("click", () => {
       state.filter = key;
+      saveFilters();
       state.limit = PAGE_SIZE;
       renderTabs();
       $("#tabs").querySelector("[aria-pressed=true]").focus();
@@ -183,7 +194,7 @@ function renderTabs() {
 }
 function renderRepositoryPicker() {
   const select = $("#repository");
-  const current = select.value;
+  const current = select.options.length === 1 ? initialFilters.get("repo") : select.value;
   select.replaceChildren(node("option", "", "All repositories"));
   select.firstChild.value = "";
   for (const repo of state.data.repositories) {
@@ -321,6 +332,7 @@ function renderRows() {
   const rows = state.all.filter(row => {
     if ((filterRepo && filterRepo !== row.repo.name) || !inTab(row, state.filter, filterRepo)) return false;
     const text = [row.key, row.pr.title, row.pr.author, row.pr.head_branch, row.pr.base_branch,
+      ...(row.pr.reviews || []).map(review => review.login), ...(row.pr.requested || []).map(person => person.login),
       row.decision[1], row.decision[2], row.pr.number].join(" ").toLowerCase();
     return words.every(word => text.includes(word));
   });
@@ -515,15 +527,18 @@ function schedule() {
   }, INTERVAL - (Date.now() % INTERVAL) + 100);
 }
 
+$("#query").value = initialFilters.get("q") || "";
 $("#query").addEventListener("input", () => {
   state.limit = PAGE_SIZE;
   if ($("#query").value.trim() && state.filter === "focus") {
     state.filter = "all";
     renderTabs();
   }
+  saveFilters();
   renderRows();
 });
 $("#repository").addEventListener("change", () => {
+  saveFilters();
   state.limit = PAGE_SIZE;
   if (state.data) setMetrics();
   renderRows();
