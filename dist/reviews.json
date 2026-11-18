@@ -45,6 +45,17 @@
     "evidence_url": "https://github.com/uwplasma/SPECTRAX/pull/95"
   },
   {
+    "repo": "uwplasma/ESSOS",
+    "number": 249,
+    "rank": 5,
+    "action": "Review",
+    "head": "e6d2f43fe88bc8a2e35146943c62f69d34cc9ff4",
+    "decision": "Independent review required for corrected particle-loss reporting.",
+    "before": "The original fix counted every stopping event or numerical failure as a physical loss.",
+    "after": "Counts a wall loss only when the requested surface is reached. A finite non-wall stop stays separate, and a failed returned trajectory makes the aggregate unresolved.",
+    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/249"
+  },
+  {
     "repo": "uwplasma/DKX",
     "number": 465,
     "head": "fc0e54d1c3da4e93d1108e0d7f31d5152513cce4",
