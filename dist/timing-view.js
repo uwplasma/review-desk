@@ -31,9 +31,9 @@ function source(record) {
 }
 async function load() {
   const urls = location.hostname === 'uwplasma.github.io' ? [feedURL + '?t=' + Math.floor(Date.now()/300000), './data.json'] : ['./data.json']
-  let h
+  let h, snapshot
   for (const url of urls) {
-    try { const r = await fetch(url, {cache:'no-store'}); if (r.ok) h = (await r.json()).timing; if (h) break } catch {}
+    try { const r = await fetch(url, {cache:'no-store'}); if (r.ok) { snapshot = await r.json(); h = snapshot.timing } if (h) break } catch {}
   }
   if (!h) { dateNode.textContent = 'The historical sample is unavailable. Open Workflow runs for the live queue.'; return }
   dateNode.textContent = h.attempts + ' workflow attempts · ' + h.all.jobs + ' jobs · sampled ' + new Date(h.captured_at).toLocaleString() + (h.gaps?.length ? ' · ' + h.gaps.length + ' incomplete API reads' : '')
@@ -45,6 +45,16 @@ async function load() {
   }
   summarize('Runner pools','Pool', h.pools)
   summarize('Repositories','Repository', h.repos)
+  const rows = snapshot.repositories.filter(repo => repo.name.startsWith('uwplasma/')).map(repo => {
+    const tip = repo.tip || {}
+    const name = element('a', repo.name.split('/')[1])
+    name.href = 'https://github.com/' + repo.name
+    const revision = element('a', (tip.sha || '').slice(0, 8))
+    if (tip.url?.startsWith('https://github.com/')) revision.href = tip.url + '/checks'
+    return [name, repo.default_branch || '—', tip.sha ? revision : '—', tip.checks || 'Unavailable', repo.pr_count ?? '—']
+  })
+  table('Current default branches', ['Repository','Branch','Commit','GitHub checks','Open PRs'], rows)
+  tables.lastElementChild.previousElementSibling.id = 'branches'
   table('Longest pre-start intervals',['Job','Pool','Pre-start','Runtime'], h.longest.map(j=>[source(j),j.pool,duration(j.wait),duration(j.runtime)]))
 }
 load()

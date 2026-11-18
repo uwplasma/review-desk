@@ -29,7 +29,7 @@ CHECKS = """statusCheckRollup { state contexts(first: 32) { pageInfo { hasNextPa
   ... on StatusContext { context state targetUrl }
 } } }"""
 QUERY = """query($owner:String!, $name:String!, $cursor:String) {
-  repository(owner:$owner,name:$name) { nameWithOwner visibility defaultBranchRef { name }
+  repository(owner:$owner,name:$name) { nameWithOwner visibility defaultBranchRef { name target { ... on Commit { oid committedDate url statusCheckRollup { state } } } }
     pullRequests(states:OPEN,first:25,after:$cursor,orderBy:{field:UPDATED_AT,direction:DESC}) {
       totalCount pageInfo { endCursor hasNextPage } nodes {
         number title url bodyText createdAt updatedAt isDraft headRefOid headRefName baseRefName
@@ -159,7 +159,12 @@ def graphql_prs(repo, token, previous):
         cursor = page["pageInfo"]["endCursor"]
         if not page["pageInfo"]["hasNextPage"]:
             break
-    return {"name": repo, "default_branch": record["defaultBranchRef"]["name"],
+    branch = record.get("defaultBranchRef") or {}
+    tip = branch.get("target") or {}
+    tip_status = {"sha": tip.get("oid"), "date": tip.get("committedDate"),
+                  "url": safe_link(tip.get("url")),
+                  "checks": (tip.get("statusCheckRollup") or {}).get("state")}
+    return {"name": repo, "default_branch": branch.get("name"), "tip": tip_status,
             "pr_count": page["totalCount"], "prs": prs, "pr_detail": "head",
             "pr_partial": page["pageInfo"]["hasNextPage"]}
 

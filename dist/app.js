@@ -477,7 +477,7 @@ async function refresh() {
     let data;
     let fallback = false;
     try {
-      data = await fetchSnapshot(LIVE ? REMOTE : "./data.json");
+      data = await fetchSnapshot(LIVE ? REMOTE + "?t=" + Math.floor(Date.now() / INTERVAL) : "./data.json");
     } catch (error) {
       if (!LIVE || state.hasLive) throw error;
       data = await fetchSnapshot("./data.json");
