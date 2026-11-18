@@ -110,13 +110,24 @@
     "evidence_url": "https://github.com/uwplasma/vmex/pull/816"
   },
   {
+    "repo": "uwplasma/SOLVAX",
+    "number": 207,
+    "head": "0a6dc5f6fc9d5ef8c6ef0367159615d083e528ae",
+    "rank": 11,
+    "action": "Review",
+    "decision": "Review the block-factor change for adjoint solves.",
+    "before": "On baseline 6cdc9f40, the 16-right-hand-side gradient took 0.131–0.159 s warm on the M4.",
+    "after": "The PR took 0.0415–0.0439 s. A centered derivative check agreed within 1.3 × 10⁻¹⁰ relative.",
+    "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#solvax"
+  },
+  {
     "repo": "uwplasma/FAX",
     "number": 66,
     "head": "95567b477f077d39861b92f9d50aa805be602163",
     "rank": 12,
     "action": "Review",
     "decision": "Promote the compile change to review.",
-    "before": "On current main, six CTOK modes took 14.02 s first call and 0.861 s warm on the M4.",
+    "before": "On base 0cea7e77, six CTOK modes took 14.02 s first call and 0.861 s warm on the M4.",
     "after": "The rebased PR took 7.29 s first call and 0.226 s warm with matching frequencies. Both revisions ran under shared load.",
     "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#fax"
   },

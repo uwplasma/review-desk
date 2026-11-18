@@ -52,7 +52,7 @@
 <section class="comparison">
 <h2>Linear solves</h2>
 <div>
-<p>On a constrained 2,305-unknown test, SciPy SuperLU and PETSc/MUMPS solved both the forward and transpose equations to roundoff. On the tested PETSc/SuperLU_DIST build, requesting a transpose solve left a relative residual of 0.424. Factoring the transpose explicitly reduced it below 7 × 10⁻¹⁶. Verify the residual before using a backend for gradients.</p>
+<p>On a constrained 2,305-unknown test, SciPy SuperLU and PETSc/MUMPS solved both the forward and transpose equations to roundoff. On the tested PETSc/SuperLU_DIST build, requesting a transpose solve left a relative residual of 0.424. Factoring the transpose explicitly reduced it below 7 × 10⁻¹⁶. Verify the residual before using a backend for gradients. VMEX, DKX, DRBX, LMhdX, FAX, GKX and MHX declare SOLVAX as a dependency. The 16-right-hand-side gradient test below measures a shared solver component. Each caller still needs its own application check.</p>
 <p class="sources"><a href="https://petsc.org/release/manual/ksp/">PETSc solver manual</a><a href="https://petsc.org/release/manualpages/Mat/MATSOLVERMUMPS/">MUMPS interface</a><a href="https://docs.jax.dev/en/latest/_autosummary/jax.lax.custom_linear_solve.html">JAX adjoint contract</a></p>
 </div>
 </section>
