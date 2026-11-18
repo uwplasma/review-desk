@@ -16,7 +16,7 @@ from urllib.request import Request, urlopen
 
 REPOSITORIES = tuple("uwplasma/" + repo for repo in (
     "vmex", "DKX", "GKX", "DRBX", "LMhdX", "FAX", "JAX-in-Cell",
-    "SPECTRAX", "MHX", "ESSOS", "SOLVAX",
+    "SPECTRAX", "MHX", "ESSOS", "SOLVAX", "virtual_casing_jax",
 )) + ("ColumbiaStellaratorTheory/firm3d",)
 API = "https://api.github.com"
 LINK_PREFIXES = ("https://github.com/", "https://app.codecov.io/")
@@ -34,7 +34,7 @@ QUERY = """query($owner:String!, $name:String!, $cursor:String) {
   repository(owner:$owner,name:$name) { nameWithOwner visibility defaultBranchRef { name target { ... on Commit { oid committedDate url statusCheckRollup { state } } } }
     pullRequests(states:OPEN,first:25,after:$cursor,orderBy:{field:UPDATED_AT,direction:DESC}) {
       totalCount pageInfo { endCursor hasNextPage } nodes {
-        number title url bodyText createdAt updatedAt isDraft headRefOid headRefName baseRefName
+        number title url bodyText additions deletions changedFiles createdAt updatedAt isDraft headRefOid headRefName baseRefName
         mergeStateStatus reviewDecision author { login } headRepository { nameWithOwner visibility }
         latestReviews(first:12) { nodes { author { login } state url submittedAt commit { oid } } }
         reviewRequests(first:12) { nodes { requestedReviewer {
@@ -120,6 +120,8 @@ def public_pr(repo, raw, previous):
     review_nodes = (raw.get("latestReviews") or {}).get("nodes", [])
     requests = (raw.get("reviewRequests") or {}).get("nodes", [])
     pr = {
+        "additions": raw.get("additions"), "deletions": raw.get("deletions"),
+        "changed_files": raw.get("changedFiles"),
         "number": raw["number"], "title": cleaned(raw["title"], 240), "url": safe_link(raw["url"]),
         "created_at": raw["createdAt"], "updated_at": raw["updatedAt"], "draft": raw["isDraft"],
         "head": raw["headRefOid"], "base_branch": raw["baseRefName"],

@@ -213,6 +213,11 @@ function detailFor(row) {
   const branches = node("div");
   branches.append(node("code", "", (pr.head_branch || "head branch unavailable") + " → " + pr.base_branch));
   branches.append(node("div", "", "Head " + pr.head.slice(0, 12) + " · updated " + utc(pr.updated_at)));
+  if ([pr.additions, pr.deletions, pr.changed_files].every(Number.isInteger)) {
+    const fileCount = pr.changed_files + (pr.changed_files === 1 ? " file" : " files");
+    branches.append(link(pr.url + "/files", "+" + pr.additions.toLocaleString() + " / −"
+      + pr.deletions.toLocaleString() + " lines · " + fileCount));
+  }
   top.append(branches, link(pr.url, "Open pull request ↗"));
   panel.append(top);
   if (parents.length) {
