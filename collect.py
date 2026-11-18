@@ -33,10 +33,10 @@ QUERY = """query($owner:String!, $name:String!, $cursor:String) {
     pullRequests(states:OPEN,first:25,after:$cursor,orderBy:{field:UPDATED_AT,direction:DESC}) {
       totalCount pageInfo { endCursor hasNextPage } nodes {
         number title url bodyText createdAt updatedAt isDraft headRefOid headRefName baseRefName
-        mergeStateStatus reviewDecision author { login url } headRepository { nameWithOwner visibility }
-        latestReviews(first:12) { nodes { author { login url } state url submittedAt } }
+        mergeStateStatus reviewDecision author { login } headRepository { nameWithOwner visibility }
+        latestReviews(first:12) { nodes { author { login } state url submittedAt commit { oid } } }
         reviewRequests(first:12) { nodes { requestedReviewer {
-          ... on User { login url } ... on Team { slug url }
+          ... on User { login url }
         } } }
         commits(last:1) { nodes { commit { oid """ + CHECKS + """ } } }
 } } } }"""
@@ -128,10 +128,12 @@ def public_pr(repo, raw, previous):
         "checks": [normalize_check(node) for node in contexts.get("nodes", []) if node],
         "check_state": rollup.get("state"), "checks_partial": contexts.get("pageInfo", {}).get("hasNextPage", False),
         "reviews": [{"login": (review.get("author") or {}).get("login"), "state": review["state"],
-                     "url": safe_link(review["url"]), "at": review["submittedAt"]}
+                     "url": safe_link(review["url"]), "at": review["submittedAt"],
+                     "head": (review.get("commit") or {}).get("oid")}
                     for review in review_nodes if review],
-        "requested": [{"login": reviewer.get("login") or reviewer.get("slug"), "url": safe_link(reviewer.get("url"))}
-                      for item in requests if (reviewer := (item or {}).get("requestedReviewer"))],
+        "requested": [{"login": reviewer["login"], "url": safe_link(reviewer.get("url"))}
+                      for item in requests if (reviewer := (item or {}).get("requestedReviewer"))
+                      and reviewer.get("login")],
         "evidence": (previous["evidence"] if previous and previous["updated_at"] == raw["updatedAt"]
                      else evidence(raw.get("bodyText"))),
     }
@@ -164,7 +166,7 @@ def graphql_prs(repo, token, previous):
 
 def rest_prs(repo, token):
     meta = get(f"/repos/{repo}", token)
-    if meta.get("private") or meta.get("visibility") not in (None, "public"):
+    if meta.get("private") is not False or meta.get("visibility") not in (None, "public"):
         return None
     rows = get(f"/repos/{repo}/pulls?state=open&per_page=100&sort=updated&direction=desc", token)
     prs = []
@@ -213,9 +215,13 @@ def collect_runs(repo, token, previous):
     runs = {}
     detail = bool(token)
     recent = get(f"{endpoint}?per_page=12", token)["workflow_runs"]
+    index_partial = not detail
     if detail:
         for status in ("queued", "in_progress"):
-            for run in get(f"{endpoint}?status={status}&per_page=15", token)["workflow_runs"]:
+            status_page = get(f"{endpoint}?status={status}&per_page=15", token)
+            if status_page["total_count"] > len(status_page["workflow_runs"]):
+                index_partial = True
+            for run in status_page["workflow_runs"]:
                 runs[run["id"]] = run
     runs.update((run["id"], run) for run in recent)
     ordered = sorted(runs.values(), key=lambda run: run["created_at"], reverse=True)
@@ -246,7 +252,7 @@ def collect_runs(repo, token, previous):
             except (OSError, ValueError, KeyError):
                 row.update(jobs=None, job_detail="unavailable")
         result.append(row)
-    return {"runs": result, "active_run_count": len(active), "active_partial": not detail or len(active) > 4}
+    return {"runs": result, "active_run_count": len(active), "active_partial": index_partial or len(active) > 4}
 
 
 def collect_repo(repo, token, previous):
@@ -257,6 +263,8 @@ def collect_repo(repo, token, previous):
         except (OSError, ValueError, KeyError, TypeError):
             if not token:
                 raise
+            with REQUEST_LOCK:
+                REQUESTS["pr_list_fallbacks"] += 1
             record = rest_prs(repo, token)
     except (OSError, ValueError, KeyError, TypeError):
         return {"name": repo, "unavailable": "GitHub repository or pull request data could not be verified."}

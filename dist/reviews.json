@@ -108,5 +108,60 @@
     "before": "The benchmark rebuilt the preconditioner 30 times per free-boundary run.",
     "after": "Three builds reached the same final objective. The reported median warm wall time fell from 327.7 to 311.8 seconds.",
     "evidence_url": "https://github.com/uwplasma/vmex/pull/816"
+  },
+  {
+    "repo": "uwplasma/FAX",
+    "number": 66,
+    "head": "1d94046ae7e73210a231cd1fdd3eca10ccffee51",
+    "rank": 12,
+    "action": "Review",
+    "decision": "Promote the compile change to review.",
+    "before": "The CTOK case took 7.00 s cold and 0.226 s warm on the M4.",
+    "after": "The same case took 2.69 s cold and 0.068 s warm. The mode frequencies matched.",
+    "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#fax"
+  },
+  {
+    "repo": "uwplasma/JAX-in-Cell",
+    "number": 86,
+    "head": "4e29a44391236822b82e80f529d800d4b17f202d",
+    "rank": 13,
+    "action": "Review",
+    "decision": "Review the collision change on its parent branch.",
+    "before": "On four Xeon cores, 200 steps with 45,000 particles took 9.36 s warm.",
+    "after": "The median fell to 4.30 s. Four seeds retained Gauss residuals below 8 × 10⁻¹⁵.",
+    "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#jax-in-cell"
+  },
+  {
+    "repo": "uwplasma/LMhdX",
+    "number": 332,
+    "head": "9b970ccc46323180d9580b7a34b3dae01c4dca70",
+    "rank": 14,
+    "action": "Review",
+    "decision": "Review after its thermal-step parent.",
+    "before": "On four Xeon cores, the third heated RK3 chunk took 10.39 s and recompiled.",
+    "after": "The third chunk took 2.11 s. Its output fields matched bit for bit.",
+    "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#lmhdx"
+  },
+  {
+    "repo": "uwplasma/DRBX",
+    "number": 134,
+    "head": "9364a29a45ab574beb80fccc87efff85914b9d32",
+    "rank": 15,
+    "action": "Review",
+    "decision": "Use this preconditioner for long runs after checking setup cost.",
+    "before": "The warm four-field test took 0.349 s per step. The full short case took 37.64 s.",
+    "after": "Warm time fell to 0.108 s but the whole case took 38.27 s. The larger setup cost needs a longer run to pay back.",
+    "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#drbx"
+  },
+  {
+    "repo": "uwplasma/MHX",
+    "number": 16,
+    "head": "2de4200320bc8945b7d0d0feb196ae138ca04687",
+    "rank": 16,
+    "action": "Review",
+    "decision": "Review real transforms for the reduced-MHD path.",
+    "before": "The 128² Orszag–Tang case took 1.706 s warm for 400 steps on the M4.",
+    "after": "The same 400 steps took 1.183 s. The physics checks passed.",
+    "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#mhx"
   }
 ]

@@ -145,18 +145,24 @@ function inTab(row, filter, repository) {
   return bucket === filter;
 }
 function setMetrics() {
-  const known = state.data.repositories.filter(repo => !repo.unavailable);
+  const selected = $("#repository").value;
+  const known = state.data.repositories.filter(repo => !repo.unavailable && (
+    selected ? selected === repo.name : repo.name.startsWith("uwplasma/")));
+  const scoped = state.all.filter(row => known.includes(row.repo));
   const active = known.reduce((total, repo) => total + (repo.active_run_count || 0), 0);
   const lowerBound = state.data.mode === "anonymous" || known.some(repo => repo.active_run_count === null);
+  const external = selected ? 0 : state.all.filter(row => !row.repo.name.startsWith("uwplasma/")).length;
+  const label = selected ? shortRepo(selected) + " open PRs" : "UW Plasma open PRs";
   const values = [
-    [state.all.length, "Open pull requests shown"],
-    [state.all.filter(row => row.decision[0] === "ready").length, "Review candidates"],
-    [state.all.filter(row => ["failure", "conflict"].includes(row.decision[0])).length, "CI failures or conflicts"],
-    [lowerBound ? "≥" + active : active, "Active workflow records"],
+    [scoped.length, label, external ? external + " external FIRM3D PRs" : null],
+    [scoped.filter(row => row.decision[0] === "ready").length, "Review candidates"],
+    [scoped.filter(row => ["failure", "conflict"].includes(row.decision[0])).length, "CI failures or conflicts"],
+    [lowerBound ? "≥" + active : active, "Active run records"],
   ];
-  $("#metrics").replaceChildren(...values.map(([value, label]) => {
+  $("#metrics").replaceChildren(...values.map(([value, caption, note]) => {
     const card = node("div", "metric");
-    card.append(node("strong", "", value), node("span", "", label));
+    card.append(node("strong", "", value), node("span", "", caption));
+    if (note) card.append(node("small", "metric-note", note));
     return card;
   }));
 }
@@ -220,7 +226,8 @@ function detailFor(row) {
   for (const review of pr.reviews || []) {
     const item = node("li");
     item.append(link(review.url || profile(review), review.login || "Reviewer"),
-      document.createTextNode(" · " + pretty(review.state) + " · " + utc(review.at)));
+      document.createTextNode(" · " + pretty(review.state) + " · " + utc(review.at)
+        + (review.head && review.head !== pr.head ? " · earlier head " + review.head.slice(0, 8) : "")));
     reviews.append(item);
   }
   for (const request of pr.requested || []) {
@@ -325,12 +332,13 @@ function renderRows() {
   $("#more").hidden = shown.length >= rows.length;
 }
 
-function timing(run, job) {
+function timing(repo, run, job) {
   const parts = [];
   if (job.backend) parts.push(job.backend);
   const pending = activeStates.has(job.status) && !job.started_at;
   const origin = job.created_at || run.created_at;
-  const end = pending ? state.data.captured_at : job.started_at;
+  const observed = repo.jobs_observed_at || state.data.captured_at;
+  const end = pending ? observed : job.started_at;
   const wait = elapsed(origin, end);
   if (wait) {
     const label = job.created_at ? (pending ? "Job waiting " : "Job wait ")
@@ -338,7 +346,7 @@ function timing(run, job) {
     parts.push(label + wait);
   }
   const active = job.status === "in_progress";
-  const wall = elapsed(job.started_at, active ? state.data.captured_at : job.completed_at);
+  const wall = elapsed(job.started_at, active ? observed : job.completed_at);
   if (wall) parts.push((active ? "Running " : "Job runtime ") + wall);
   return parts.join(" · ");
 }
@@ -371,7 +379,7 @@ function renderRun(repo, run) {
       const item = node("li");
       const label = node("div");
       label.append(link(job.url, job.name), document.createTextNode(" · " + pretty(job.conclusion || job.status)));
-      item.append(label, node("small", "", timing(run, job)));
+      item.append(label, node("small", "", timing(repo, run, job)));
       jobs.append(item);
     }
     if (run.jobs_partial) jobs.append(node("li", "", "Additional jobs fall outside the sample."));
@@ -436,15 +444,16 @@ function showCapture(fallback, failed) {
   const age = elapsed(timestamp, new Date().toISOString());
   $("#captured").textContent = utc(timestamp) + (age ? " · " + age + " old" : "");
   const run = $("#collection-run");
-  run.hidden = !state.data.collection_run;
-  if (!run.hidden) run.href = state.data.collection_run;
+  const source = link(state.data.collection_run, "Collection run");
+  run.hidden = source.tagName !== "A";
+  if (!run.hidden) run.href = source.href;
   const notice = $("#notice");
-  const stale = stamp(timestamp) !== null && Date.now() - stamp(timestamp) > 2 * 60 * 60_000;
-  const partial = state.data.repositories.filter(repo => repo.unavailable || repo.jobs_unavailable).length;
+  const stale = stamp(timestamp) !== null && Date.now() - stamp(timestamp) >= 2 * INTERVAL;
+  const partial = state.data.repositories.filter(repo => repo.unavailable || repo.jobs_unavailable || repo.pr_detail === "list").length;
   const warnings = [];
   if (failed) warnings.push("The latest fetch failed. Showing the last snapshot loaded in this tab.");
   else if (fallback) warnings.push("The live feed is unavailable. Showing the bundled snapshot.");
-  if (stale) warnings.push("This snapshot is more than two hours old.");
+  if (stale) warnings.push("This snapshot is at least 10 minutes old.");
   if (partial) warnings.push("Some data could not be refreshed for " + partial + (partial === 1 ? " repository." : " repositories."));
   notice.hidden = warnings.length === 0;
   notice.textContent = warnings.join(" ");
@@ -453,6 +462,11 @@ async function fetchJson(url) {
   const response = await fetch(url, {cache: "no-store", signal: AbortSignal.timeout(10_000)});
   if (!response.ok) throw new Error("HTTP " + response.status);
   return response.json();
+}
+async function fetchSnapshot(url) {
+  const data = await fetchJson(url);
+  if (data.schema !== 1 || !Array.isArray(data.repositories)) throw new Error("Unknown snapshot format");
+  return data;
 }
 async function refresh() {
   if (state.fetching) return;
@@ -463,13 +477,12 @@ async function refresh() {
     let data;
     let fallback = false;
     try {
-      data = await fetchJson(LIVE ? REMOTE : "./data.json");
+      data = await fetchSnapshot(LIVE ? REMOTE : "./data.json");
     } catch (error) {
       if (!LIVE || state.hasLive) throw error;
-      data = await fetchJson("./data.json");
+      data = await fetchSnapshot("./data.json");
       fallback = true;
     }
-    if (data.schema !== 1 || !Array.isArray(data.repositories)) throw new Error("Unknown snapshot format");
     if (!fallback && LIVE) state.hasLive = true;
     if (!state.data || state.data.captured_at !== data.captured_at) {
       state.data = data;
@@ -512,6 +525,7 @@ $("#query").addEventListener("input", () => {
 });
 $("#repository").addEventListener("change", () => {
   state.limit = PAGE_SIZE;
+  if (state.data) setMetrics();
   renderRows();
   renderRuns();
 });

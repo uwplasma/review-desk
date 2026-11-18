@@ -39,8 +39,8 @@ nav a{font-size:.84rem;color:var(--dim);white-space:nowrap}
 .intro{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding:49px 0 30px}
 .kicker{font-size:.71rem;font-weight:750;letter-spacing:.14em;color:var(--accent);margin:0 0 9px}
 h1,h2,h3,p{margin:0}
-h1{font-family:"Geist","Inter",system-ui,sans-serif;font-weight:710;font-size:clamp(3rem,8vw,6.1rem);letter-spacing:-.074em;line-height:.95}
-h2{font-size:clamp(1.72rem,4vw,2.58rem);line-height:1.05;letter-spacing:-.045em;font-weight:680}
+h1{font-family:"Geist","Inter",system-ui,sans-serif;font-weight:710;font-size:clamp(3rem,8vw,6.1rem);letter-spacing:-.034em;word-spacing:.015em;line-height:.95}
+h2{font-size:clamp(1.72rem,4vw,2.58rem);line-height:1.05;letter-spacing:-.028em;word-spacing:.014em;font-weight:680}
 h3{font-size:1rem;font-weight:680}
 .intro-copy{max-width:37rem;margin-top:17px;color:var(--dim);font-size:clamp(.99rem,2vw,1.13rem)}
 .capture{display:grid;justify-items:start;gap:5px;border-left:1px solid var(--edge);padding-left:17px;min-width:210px;color:var(--dim);font-size:.84rem}
@@ -55,6 +55,7 @@ h3{font-size:1rem;font-weight:680}
 .metric+.metric{border-left:1px solid var(--edge)}
 .metric strong{display:block;font-size:clamp(1.75rem,4vw,2.6rem);font-weight:680;letter-spacing:-.045em;line-height:1.04;font-variant-numeric:tabular-nums}
 .metric span{display:block;color:var(--dim);margin-top:.46rem;font-size:.86rem}
+.metric-note{display:block;color:var(--quiet);font-size:.71rem;margin-top:1px}
 .metric:nth-child(2) strong{color:var(--accent)}
 .metric:nth-child(3) strong{color:var(--warm)}
 section{scroll-margin-top:21px}
@@ -137,16 +138,38 @@ details[open]>summary>.chevron{transform:rotate(45deg)}
   nav a{font-size:.72rem}
   nav a:last-child{display:none}
   nav a[href="#workflow-runs"]{display:none}
-  .intro{display:grid;align-items:start;gap:20px;padding:37px 0 26px}
-  .capture{min-width:0}
-  .metrics{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:43px}
-  .metric{min-height:85px;padding:13px}
+  .intro{display:grid;align-items:start;gap:11px;padding:22px 0 15px}
+  .intro-copy{margin-top:10px;font-size:.91rem;line-height:1.38}
+  .capture{display:flex;align-items:center;flex-wrap:wrap;gap:3px 9px;min-width:0;padding-left:10px}
+  .capture-label{display:none}
+  .capture-actions{margin:0;gap:9px}
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:22px}
+  .metric{min-height:56px;padding:7px 11px}
+  .metric strong{font-size:1.42rem}
+  .metric span{margin-top:2px;font-size:.74rem}
+  .metric-note{font-size:.66rem}
   .metric:nth-child(3){border-left:none}
   .metric:nth-child(n+3){border-top:1px solid var(--edge)}
-  .toolbar{grid-template-columns:1fr}
+  .toolbar{grid-template-columns:minmax(0,1fr) minmax(7.1rem,auto);gap:7px;margin-bottom:9px}
+  .query,.picker{min-height:41px}
+  .query{padding:0 8px}
+  .query input,.picker select{font-size:.81rem}
+  .picker select{max-width:9rem;padding-inline:8px}
+  .query input,.picker select{padding-top:8px;padding-bottom:8px}
+  .tabs{gap:6px;margin-bottom:12px}
   .run-grid,.detail-grid{grid-template-columns:1fr}
   .detail-grid{gap:17px}
   .section-head{align-items:start}
   .muted{font-size:.73rem}
-  .pr summary{padding:13px 11px;grid-template-columns:5.1rem minmax(0,1fr) 12px}
+  .pr summary{padding:11px;grid-template-columns:minmax(0,1fr) 12px;gap:7px 8px}
+  .pr-meta{display:flex;align-items:baseline;gap:8px;grid-column:1}
+  .pr-title,.triage{grid-column:1/-1}
+  .pr summary>.chevron{grid-column:2;grid-row:1}
+}
+
+@media(max-width:360px){
+  .brand{gap:8px;font-size:.69rem}
+  .brand-mark{width:24px;height:24px}
+  nav{gap:8px}
+  .tabs button{padding:6px 9px}
 }
