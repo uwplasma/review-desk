@@ -131,7 +131,7 @@ function consolidate(data, notes) {
         decision: classify(repo, pr, parents, annotation), key: repo.name + "#" + pr.number};
     });
   }).sort((a, b) => Number(!a.repo.name.startsWith("uwplasma/")) - Number(!b.repo.name.startsWith("uwplasma/"))
-    || a.decision[3] - b.decision[3] || (stamp(b.pr.updated_at) || 0) - (stamp(a.pr.updated_at) || 0));
+    || (a.annotation?.rank ?? a.decision[3]) - (b.annotation?.rank ?? b.decision[3]) || (stamp(b.pr.updated_at) || 0) - (stamp(a.pr.updated_at) || 0));
 }
 
 function inTab(row, filter, repository) {
@@ -139,8 +139,8 @@ function inTab(row, filter, repository) {
   if (filter === "all") return true;
   if (filter === "ci") return ["failure", "conflict", "pending"].includes(bucket);
   if (filter === "focus") {
-    return !row.pr.draft && (repository || row.repo.name.startsWith("uwplasma/"))
-      && ["ready", "review", "failure", "conflict", "pending"].includes(bucket);
+    return (repository || row.repo.name.startsWith("uwplasma/"))
+      && (row.annotation || (!row.pr.draft && ["ready", "review", "failure", "conflict", "pending"].includes(bucket)));
   }
   return bucket === filter;
 }
