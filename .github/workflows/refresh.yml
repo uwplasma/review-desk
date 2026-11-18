@@ -30,7 +30,9 @@ jobs:
           elif [[ -f dist/data.json ]]; then
             cp dist/data.json .cache/dashboard.json
           fi
+          cp .cache/dashboard.json .cache/previous.json 2>/dev/null || true
           python3 collect.py --output .cache/fresh.json --cache .cache/dashboard.json
+          python3 timing.py .cache/fresh.json --previous .cache/previous.json
           printf 'PRIOR_DATA=%s\n' "$prior" >> "$GITHUB_ENV"
       - name: Publish the current feed
         run: |

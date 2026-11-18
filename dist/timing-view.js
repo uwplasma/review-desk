@@ -1,0 +1,52 @@
+const feedURL = 'https://raw.githubusercontent.com/uwplasma/review-desk/data/data.json'
+const tables = document.querySelector('#tables')
+const dateNode = document.querySelector('#date')
+function element(tag, text) {
+  const node = document.createElement(tag)
+  if (text !== undefined) node.textContent = text
+  return node
+}
+function duration(s) {
+  if (s == null) return '—'
+  const seconds = Math.round(s)
+  return seconds < 60 ? seconds + ' s' : Math.floor(seconds / 60) + 'm ' + (seconds % 60) + 's'
+}
+function table(title, headers, rows) {
+  tables.append(element('h2', title))
+  const wrap = element('div'); wrap.className = 'scroll'
+  const t = element('table'); const head = t.createTHead().insertRow()
+  for (const key of headers) { const th = element('th', key); th.scope = 'col'; head.append(th) }
+  const body = t.createTBody()
+  for (const fields of rows) {
+    const row = body.insertRow()
+    for (const value of fields) row.insertCell().append(value instanceof Node ? value : document.createTextNode(String(value)))
+  }
+  wrap.append(t); tables.append(wrap)
+}
+function source(record) {
+  const label = record.repo.split('/')[1] + ' · ' + record.name
+  if (!record.url.startsWith('https://github.com/')) return label
+  const link = element('a', label); link.href = record.url
+  return link
+}
+async function load() {
+  const urls = location.hostname === 'uwplasma.github.io' ? [feedURL + '?t=' + Math.floor(Date.now()/300000), './data.json'] : ['./data.json']
+  let h
+  for (const url of urls) {
+    try { const r = await fetch(url, {cache:'no-store'}); if (r.ok) h = (await r.json()).timing; if (h) break } catch {}
+  }
+  if (!h) { dateNode.textContent = 'The historical sample is unavailable. Open Workflow runs for the live queue.'; return }
+  dateNode.textContent = h.attempts + ' workflow attempts · ' + h.all.jobs + ' jobs · sampled ' + new Date(h.captured_at).toLocaleString() + (h.gaps?.length ? ' · ' + h.gaps.length + ' incomplete API reads' : '')
+  tables.replaceChildren()
+  function summarize(title, first, obj) {
+    const rows = Object.entries(obj).sort((a,b)=>b[1].minutes-a[1].minutes).map(([key,s]) =>
+      [key.replace('uwplasma/',''), s.jobs, duration(s.wait[0]), duration(s.wait[1]), duration(s.runtime[0]), s.minutes.toLocaleString(), s.cancelled_minutes.toLocaleString()])
+    table(title, [first,'Jobs','Median pre-start','p95 pre-start','Median runtime','Runner-min','Cancelled min'], rows)
+  }
+  summarize('Runner pools','Pool', h.pools)
+  summarize('Repositories','Repository', h.repos)
+  table('Longest pre-start intervals',['Job','Pool','Pre-start','Runtime'], h.longest.map(j=>[source(j),j.pool,duration(j.wait),duration(j.runtime)]))
+}
+load()
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()})
+setInterval(()=>{if(!document.hidden)load()},300000)

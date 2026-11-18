@@ -1,0 +1,112 @@
+[
+  {
+    "repo": "uwplasma/DRBX",
+    "number": 132,
+    "head": "369f30a87b7c1284daa5610d9501625a4c413efd",
+    "rank": 1,
+    "action": "Review",
+    "decision": "Merge the property tests first.",
+    "before": "Eight multigrid checks were outside test discovery. The coverage job had no floor.",
+    "after": "The PR restores those checks. Measured coverage rose from 58% to 59% on its base and the combined test time fell from 18m 20s to 17m 02s.",
+    "evidence_url": "https://github.com/uwplasma/DRBX/pull/132"
+  },
+  {
+    "repo": "uwplasma/DRBX",
+    "number": 131,
+    "head": "48e5beb894107e37e1b02951e7c947974641a4da",
+    "rank": 2,
+    "action": "Review",
+    "decision": "Take the cleanup after #132 and recheck test discovery.",
+    "before": "Six test files contained helpers and legacy tests that never ran.",
+    "after": "The PR removes 1,109 lines. On the tested base, pytest collected the same 982 tests.",
+    "evidence_url": "https://github.com/uwplasma/DRBX/pull/131"
+  },
+  {
+    "repo": "uwplasma/ESSOS",
+    "number": 182,
+    "head": "e71584c500db7759e42e45b6b3a961cd67ff1325",
+    "rank": 3,
+    "action": "Review",
+    "decision": "Approve the surface-flux correction.",
+    "before": "The quadrature could close an open half-period arc and report a spurious flux.",
+    "after": "Full-torus integration uses analytic tangents. The PR reports 28 passing tests, including an analytic coil comparison and shape derivatives.",
+    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/182"
+  },
+  {
+    "repo": "uwplasma/ESSOS",
+    "number": 183,
+    "head": "b877cb2f44b008950b5d4715144ab57ddbf34ff2",
+    "rank": 4,
+    "action": "Review",
+    "decision": "Approve the weighted-loss fix.",
+    "before": "Scaling a loss could lose its inputs. A first call under JIT could cache an invalid tracer.",
+    "after": "Both failures have regression tests. The PR reports seven passes and one previously expected failure.",
+    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/183"
+  },
+  {
+    "repo": "uwplasma/ESSOS",
+    "number": 185,
+    "head": "c10d392c5fe575d9c74a2dd533d20b839fe015a0",
+    "rank": 5,
+    "action": "Review",
+    "decision": "Approve fixed and unbounded optimizer bounds.",
+    "before": "Infinite or fixed bounds could break the inner optimization.",
+    "after": "The PR reports 28 passing tests, including seven new bound cases.",
+    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/185"
+  },
+  {
+    "repo": "uwplasma/ESSOS",
+    "number": 230,
+    "head": "2ca01d0ba21afb0fd58d24f4544279d977251595",
+    "rank": 6,
+    "action": "Review",
+    "decision": "Review compile reuse after the correctness changes.",
+    "before": "A repeated VMEC trace compiled three times. Median steady time was 8.4 s.",
+    "after": "Recompiles fell to zero and steady time was 8.3 s. The first trace rose from about 13 s to about 20 s.",
+    "evidence_url": "https://github.com/uwplasma/ESSOS/pull/230"
+  },
+  {
+    "repo": "uwplasma/GKX",
+    "number": 501,
+    "head": "86849337b0350e55c746e00983798cb48904ef81",
+    "rank": 7,
+    "action": "Hold",
+    "decision": "Hold collision batching until elapsed time survives chunk boundaries.",
+    "before": "In a reproduced three-step case the elapsed time was 0.21.",
+    "after": "This head applied 0.03. Two short chunks could skip the collision. Restrict batching to aligned fixed steps or carry elapsed time across chunks.",
+    "evidence_url": "https://github.com/uwplasma/GKX/pull/501"
+  },
+  {
+    "repo": "uwplasma/SPECTRAX",
+    "number": 95,
+    "head": "cb621f0dfe76e6ebcbb96e55c556b4a397d3d63b",
+    "rank": 8,
+    "action": "Hold",
+    "decision": "Request per-species normalization and a Gauss-law test.",
+    "before": "The default initial state ignored the requested thermal scales.",
+    "after": "This head reads the first scale. An unequal-temperature case still gives densities 1.32 and 0.0000138 where each species should have unit density.",
+    "evidence_url": "https://github.com/uwplasma/SPECTRAX/pull/95"
+  },
+  {
+    "repo": "uwplasma/DKX",
+    "number": 465,
+    "head": "fc0e54d1c3da4e93d1108e0d7f31d5152513cce4",
+    "rank": 9,
+    "action": "Hold",
+    "decision": "Choose one implementation of lower-memory factors with #459.",
+    "before": "Both PRs change storage in the same coarse preconditioner.",
+    "after": "This branch solved the large W7-X case, but peak memory exceeded its estimate. Preserve both forward and transpose checks when combining the changes.",
+    "evidence_url": "https://github.com/uwplasma/DKX/pull/465"
+  },
+  {
+    "repo": "uwplasma/vmex",
+    "number": 816,
+    "head": "31e961c7a5dfd88ba1e858d4bbd907875b20500e",
+    "rank": 10,
+    "action": "Review",
+    "decision": "Review anchor-factor reuse after refreshing the branch.",
+    "before": "The benchmark rebuilt the preconditioner 30 times per free-boundary run.",
+    "after": "Three builds reached the same final objective. The reported median warm wall time fell from 327.7 to 311.8 seconds.",
+    "evidence_url": "https://github.com/uwplasma/vmex/pull/816"
+  }
+]
