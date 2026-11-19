@@ -24,7 +24,7 @@
   {
     "repo": "uwplasma/DKX",
     "number": 473,
-    "head": "0be3171856a30a1d07df3e87b419d3e038364d6e",
+    "head": "b5f7983a181ebf9a7a41edd8aae0d48003eab7bb",
     "rank": 3,
     "action": "Review",
     "decision": "Approve the Redl comparison after CI passes.",
@@ -35,7 +35,7 @@
   {
     "repo": "uwplasma/DKX",
     "number": 472,
-    "head": "87babbc56fa61f02f722ae65c2c8857e43000068",
+    "head": "9ca292c17fe650450caf200feb5c8409cfdf56e9",
     "rank": 4,
     "action": "Review",
     "decision": "Approve the per-surface solver diagnostics after CI passes.",
@@ -46,7 +46,7 @@
   {
     "repo": "uwplasma/DKX",
     "number": 471,
-    "head": "86bb81720531cd03de4b17ebd5895140deb131f5",
+    "head": "8e2cad164848591972abca4fae16a4ea5eb83776",
     "rank": 5,
     "action": "Review",
     "decision": "Await independent approval.",
@@ -59,11 +59,12 @@
     "number": 207,
     "head": "90caba761b4e41eda912f733f96f17a0aa6cc04d",
     "rank": 6,
-    "action": "Review",
-    "decision": "Await independent approval. Keep downstream dependency floors.",
+    "action": "Hold",
+    "decision": "Resolve the JAX 0.12.1 CI failure and obtain independent approval.",
     "before": "A 1,000-block adjoint took 25.21 ms on the M4.",
     "after": "The median fell to 17.48 ms. Paired application runs found no repeatable gain for VMEX or virtual casing.",
-    "evidence_url": "https://github.com/uwplasma/SOLVAX/pull/207"
+    "evidence_url": "https://github.com/uwplasma/SOLVAX/pull/207",
+    "validation": "On JAX 0.12.1 the nonlinear test used 1,127 adaptive versus 1,119 fixed Krylov iterations on both main and this PR. Both revisions passed on JAX 0.12.0.1."
   },
   {
     "repo": "uwplasma/ESSOS",
@@ -97,17 +98,6 @@
     "before": "The benchmark rebuilt the preconditioner 30 times per free-boundary run.",
     "after": "Three builds reached the same final objective. The reported median warm wall time fell from 327.7 to 311.8 seconds.",
     "evidence_url": "https://github.com/uwplasma/vmex/pull/816"
-  },
-  {
-    "repo": "uwplasma/FAX",
-    "number": 66,
-    "head": "db09606889c4ba377c614d7500cda8c3c4c7b874",
-    "rank": 10,
-    "action": "Review",
-    "decision": "Review the six-mode assembly change after the ready-for-review checks finish.",
-    "before": "On base 0cea7e77, six CTOK modes took 14.02 s first call and 0.861 s warm on the M4.",
-    "after": "The rebased PR took 7.29 s first call and 0.226 s warm with matching frequencies. Both revisions ran under shared load.",
-    "evidence_url": "https://uwplasma.github.io/review-desk/benchmarks.html#fax"
   },
   {
     "repo": "uwplasma/JAX-in-Cell",
