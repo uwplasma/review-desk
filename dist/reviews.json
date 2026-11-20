@@ -1,13 +1,13 @@
 [
   {
-    "repo": "uwplasma/DKX",
-    "number": 477,
-    "head": "73e9b84a57b5e841210c478dd8edcf3172c2edfb",
-    "decision": "Approve the Phi1 adjoint correction after CI passes.",
-    "before": "With float32 factors, increasing the GMRES restart cap from 40 to 120 left the true residual at 2.1e-13 on the reported case.",
-    "after": "The solver now refines against the true residual. The local finite-difference and Taylor test passed with the original tolerance.",
+    "repo": "uwplasma/SOLVAX",
+    "number": 213,
+    "head": "38da6a388a37a9dce4026fea662a60c84e347dc2",
+    "decision": "Approve the nonlinear test correction to unblock #207.",
+    "before": "The old test failed on JAX 0.12.1 even though both solvers reached the same root.",
+    "after": "The revised tests check the forcing rule directly. On three shifted Laplacians, adaptive GMRES took 28–29 iterations versus 84–87 at fixed tolerance. All 36 local nonlinear tests and required CI jobs passed.",
     "action": "Review",
-    "evidence_url": "https://github.com/uwplasma/DKX/pull/477",
+    "evidence_url": "https://github.com/uwplasma/SOLVAX/pull/213",
     "rank": 1
   },
   {
@@ -25,7 +25,7 @@
     "repo": "uwplasma/vmex",
     "number": 826,
     "head": "179a951fe8b7620e8b800a021a38a9b7a3c5c803",
-    "decision": "Approve cached-program differentiation after CI passes.",
+    "decision": "Approve the warm-cache gradient fix. CI passed.",
     "before": "A warm disk cache caused a gradient test to fail on main.",
     "after": "The reported warm-cache pair now passes both tests. An independent local run passed the loaded-executable derivative test.",
     "action": "Review",
@@ -68,7 +68,7 @@
   {
     "repo": "uwplasma/DKX",
     "number": 473,
-    "head": "c7cfc751b7fb4e129e03fecee19adc999a8d38fd",
+    "head": "057dfb0e35b41e7771d8cfcaf611fa92ab4e4469",
     "rank": 7,
     "action": "Review",
     "decision": "Approve the Redl comparison after CI passes.",
@@ -79,7 +79,7 @@
   {
     "repo": "uwplasma/DKX",
     "number": 472,
-    "head": "2c84eb19f713bf852125cf8e3ac9cfe4a6f2e22e",
+    "head": "1e5c39069fc0c854b98370eaceb4abfb302fbab2",
     "rank": 8,
     "action": "Review",
     "decision": "Approve the per-surface solver diagnostics after CI passes.",
@@ -90,7 +90,7 @@
   {
     "repo": "uwplasma/DKX",
     "number": 471,
-    "head": "2ca0d72d6ddf912a0744a38aef1b9f57df5be261",
+    "head": "47e2877fbcbb3e037944cedc4f0428e7f9e9b5e1",
     "rank": 9,
     "action": "Review",
     "decision": "Await independent approval.",
